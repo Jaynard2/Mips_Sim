@@ -15,8 +15,11 @@ public class IfIdStage {
 
   public void update() 
   {
-    instPC = simulator.getPCStage().getPC();
-    inst = simulator.getMemory().getInstAtAddr(instPC);
-    opcode = inst.getOpcode();
+    if(!simulator.stall)
+    {
+      instPC = simulator.getPCStage().getPC();
+      inst = simulator.getMemory().getInstAtAddr(instPC);
+      opcode = inst.getOpcode();
+    }
   }
 }

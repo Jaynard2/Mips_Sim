@@ -9,9 +9,13 @@ public class Registers
     private PipelineSimulator sim;
     private FORWARD_STAGES concernedStage;
 
-    public Registers()
+    public Registers(PipelineSimulator simulator)
     {
         registers = new int[32];
+        exmemCurReg = -1;
+        memwbCurReg = -1;
+        sim = simulator;
+        concernedStage = FORWARD_STAGES.NONE;
     }
 
     public void setExmemCur(int reg)
@@ -32,10 +36,10 @@ public class Registers
     public int readReg(int regNum)
     {
         if(regNum == exmemCurReg && concernedStage == FORWARD_STAGES.ALL)
-            regNum = sim.getExMemStage().destReg;
+            return sim.exMem.aluIntData;
         if(regNum == memwbCurReg && 
             (concernedStage == FORWARD_STAGES.ALL || concernedStage == FORWARD_STAGES.MEMWB))
-            regNum = sim.getMemWbStage().destReg;
+            return sim.memWb.aluIntData;
 
         return registers[regNum];
     }

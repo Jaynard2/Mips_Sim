@@ -23,6 +23,7 @@ public class ProgramCounter {
   }
 
   public void update() {
-    incrPC();
+    if(!simulator.stall)
+      incrPC();
   }
 }

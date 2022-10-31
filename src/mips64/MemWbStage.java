@@ -1,5 +1,7 @@
 package mips64;
 
+import mips64.Registers.FORWARD_STAGES;
+
 public class MemWbStage {
 
     PipelineSimulator simulator;
@@ -10,7 +12,6 @@ public class MemWbStage {
     int aluIntData;
     int loadIntData;
     int destReg;
-    int regs[];
 
     final int haltCode = Instruction.getOpcodeFromName("HALT");
     final int loadCode = Instruction.getOpcodeFromName("LW");
@@ -19,7 +20,6 @@ public class MemWbStage {
     public MemWbStage(PipelineSimulator sim) {
         simulator = sim;
         opcode = Instruction.getOpcodeFromName("NOP");
-        regs = simulator.getIdExStage().registers;
         halted = false;
     }
 
@@ -39,19 +39,23 @@ public class MemWbStage {
         //     return;
         // }
 
+        Registers regs = simulator.regs;
+        regs.setConcerned(FORWARD_STAGES.NONE);
+        regs.setMemwbCur(destReg);
         if(opcode == loadCode)
         {
             loadIntData =  simulator.getMemory().getIntDataAtAddr(aluIntData);
-            regs[destReg] = loadIntData;
+            regs.writeReg(destReg, loadIntData);
         }
         else if(opcode == storeCode)
         {
             MemoryModel mem = simulator.getMemory();
-            mem.setIntDataAtAddr(aluIntData, regs[destReg]);
+            mem.setIntDataAtAddr(aluIntData, regs.readReg(destReg));
+            regs.setMemwbCur(-1);
         }
         else if(destReg != -1)
         {
-            regs[destReg] = aluIntData;
+            regs.writeReg(destReg, aluIntData);
         }
 
         ExMemStage prevStage = simulator.getExMemStage();
@@ -60,7 +64,20 @@ public class MemWbStage {
         opcode = prevStage.opcode;
         aluIntData = prevStage.aluIntData;
         destReg = prevStage.destReg;
-        loadIntData = -1;
 
+        int regA = prevStage.regA;
+        int regB = prevStage.regB;
+        if(regA == destReg || regB == destReg)
+        {
+            prevStage.storeIntData = aluIntData;
+        }
+
+        IdExStage idexStage = simulator.getIdExStage();
+        regA = idexStage.regA;
+        regB = idexStage.regB;
+        if(regA == destReg || regB == destReg)
+        {
+            idexStage.storeIntData = aluIntData;
+        }
     }
 }
