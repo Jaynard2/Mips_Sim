@@ -40,8 +40,8 @@ public class IdExStage {
         }
         else if (inst instanceof RTypeInst){
             regAData = getIntRegister(((RTypeInst)inst).getRS());
-            regBData = getIntRegister(((RTypeInst)inst).getRD());
-            destReg = ((RTypeInst)inst).getRT();
+            regBData = getIntRegister(((RTypeInst)inst).getRT());
+            destReg = ((RTypeInst)inst).getRD();
             //immediate = 0;
         }
         else if (inst instanceof JTypeInst){
