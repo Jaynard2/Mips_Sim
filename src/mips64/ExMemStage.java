@@ -62,21 +62,24 @@ public class ExMemStage {
             break;
         case Instruction.INST_SLL:
         {
-            RTypeInst inst = (RTypeInst)Instruction.getInstructionFromOper(opcode);
+            String name = Instruction.getNameFromOpcode(opcode);
+            RTypeInst inst = (RTypeInst)Instruction.getInstructionFromName(name);
             int shiftAmount = inst.getShamt();
             aluIntData = regA << shiftAmount;
             break;
         }
         case Instruction.INST_SRL:
         {
-            RTypeInst inst = (RTypeInst)Instruction.getInstructionFromOper(opcode);
+            String name = Instruction.getNameFromOpcode(opcode);
+            RTypeInst inst = (RTypeInst)Instruction.getInstructionFromName(name);
             int shiftAmount = inst.getShamt();
             aluIntData = regA >> shiftAmount;
             break;
         }
         case Instruction.INST_SRA:
         {
-            RTypeInst inst = (RTypeInst)Instruction.getInstructionFromOper(opcode);
+            String name = Instruction.getNameFromOpcode(opcode);
+            RTypeInst inst = (RTypeInst)Instruction.getInstructionFromName(name);
             int shiftAmount = inst.getShamt();
             aluIntData = regA >>> shiftAmount;
             break;

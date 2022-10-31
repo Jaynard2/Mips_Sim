@@ -4,6 +4,7 @@ public class IfIdStage {
   PipelineSimulator simulator;
   int instPC;
   int opcode;
+  Instruction inst;
 
 
   public IfIdStage(PipelineSimulator sim) {
@@ -14,7 +15,7 @@ public class IfIdStage {
   public void update() 
   {
     instPC = simulator.getPCStage().getPC();
-    Instruction inst = simulator.getMemory().getInstAtAddr(instPC);
+    inst = simulator.getMemory().getInstAtAddr(instPC);
     opcode = inst.getOpcode();
   }
 }
