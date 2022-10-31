@@ -9,6 +9,9 @@ public class IdExStage {
     int regAData;
     int regBData;
     int immediate;
+    int inst;
+
+    Instruction decodedInstruction = null;
 
     int registers[];
 
@@ -26,19 +29,19 @@ public class IdExStage {
         instPC = simulator.getIfIdStage().instPC;
         opcode = simulator.getIfIdStage().opcode;
 
-        Instruction decodedInst = Instruction.getInstructionFromOper(opcode);
+        decodedInstruction = Instruction.getInstructionFromOper(opcode);
 
-        if (decodedInst instanceof ITypeInst){
-            regAData = getIntRegister(((ITypeInst)decodedInst).getRT());
-            regBData = getIntRegister(((ITypeInst)decodedInst).getRS());
-            immediate = ((ITypeInst)decodedInst).getImmed();
+        if (decodedInstruction instanceof ITypeInst){
+            regAData = getIntRegister(((ITypeInst)decodedInstruction).getRT());
+            regBData = getIntRegister(((ITypeInst)decodedInstruction).getRS());
+            immediate = ((ITypeInst)decodedInstruction).getImmed();
         }
-        else if (decodedInst instanceof RTypeInst){
-            regAData = getIntRegister(((RTypeInst)decodedInst).getRT());
-            regBData = getIntRegister(((RTypeInst)decodedInst).getRS());
+        else if (decodedInstruction instanceof RTypeInst){
+            regAData = getIntRegister(((RTypeInst)decodedInstruction).getRT());
+            regBData = getIntRegister(((RTypeInst)decodedInstruction).getRS());
         }
-        else if (decodedInst instanceof JTypeInst){
-            immediate = ((JTypeInst)decodedInst).getOffset();
+        else if (decodedInstruction instanceof JTypeInst){
+            immediate = ((JTypeInst)decodedInstruction).getOffset();
         }
     }
 }
