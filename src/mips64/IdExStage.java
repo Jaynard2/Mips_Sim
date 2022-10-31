@@ -11,8 +11,6 @@ public class IdExStage {
     int immediate;
     int inst;
 
-    Instruction decodedInstruction = null;
-
     int registers[];
 
     public IdExStage(PipelineSimulator sim) {
@@ -29,7 +27,7 @@ public class IdExStage {
         instPC = simulator.getIfIdStage().instPC;
         opcode = simulator.getIfIdStage().opcode;
 
-        decodedInstruction = Instruction.getInstructionFromOper(opcode);
+        Instruction decodedInstruction = Instruction.getInstructionFromOper(opcode);
 
         if (decodedInstruction instanceof ITypeInst){
             regAData = getIntRegister(((ITypeInst)decodedInstruction).getRT());
