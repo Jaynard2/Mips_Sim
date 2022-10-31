@@ -17,13 +17,11 @@
 -- 
 Begin Assembly
 -- Stack will be at Org5000 - R30 is SP
-LABEL beg
 ADDI R30, R0, 5000
 -- Data is at Org 4000
 ADDI R4, R0, 4000
 -- Load number of elements
 LW R2, 0(R4)
-JAL beg
 -- Multiply this by 4, since each element is 4 bytes
 SLL R3, R2, 2
 -- R4 is address of beginning of array of numbers

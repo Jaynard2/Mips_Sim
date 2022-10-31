@@ -43,20 +43,29 @@ public class MemWbStage {
 
         Registers regs = simulator.regs;
         regs.setConcerned(FORWARD_STAGES.NONE);
-        regs.setMemwbCur(destReg);
+        ExMemStage prevStage = simulator.getExMemStage();
+        int regA = simulator.idEx.regA;
+        int regB = simulator.idEx.regB;
+
         if (opcode == loadCode)
         {
-            loadIntData =  simulator.getMemory().getIntDataAtAddr(aluIntData);
-            // Make reading from mem take 1 clk
-            if(!simulator.stall)
+            if(simulator.stall)
             {
-                regs.writeReg(destReg, loadIntData);
-                loadIntData = -1;
+                simulator.regs.writeReg(destReg, loadIntData);
+                if(regA == destReg)
+                {
+                    prevStage.isForwarded = FORWADED.REG_A;
+                    prevStage.storeIntData = loadIntData;
+                }
+                if(regB == destReg)
+                {
+                    prevStage.isForwarded = prevStage.isForwarded == FORWADED.NONE ? FORWADED.REG_B : FORWADED.ALL;
+                    prevStage.storeIntData = loadIntData;
+                }
             }
         }
         else
         {
-            loadIntData = -1;
             if(opcode == storeCode)
             {
                 MemoryModel mem = simulator.getMemory();
@@ -72,29 +81,19 @@ public class MemWbStage {
                 regs.writeReg(destReg, aluIntData);
             }
         }
+        loadIntData = -1;
 
-        ExMemStage prevStage = simulator.getExMemStage();
         shouldWriteback = prevStage.shouldWriteback;
         instPC = prevStage.instPC;
         opcode = prevStage.opcode;
         aluIntData = prevStage.aluIntData;
         destReg = prevStage.destReg;
-        // Need to look 2 behind bc of stall
-        int regA = simulator.idEx.regA;
-        int regB = simulator.idEx.regB;
+        regs.setMemwbCur(destReg);
+
         if(opcode == loadCode && !simulator.stall)
         {
             simulator.stall = true;
-            if(regA == destReg)
-            {
-                prevStage.storeIntData = loadIntData;
-                prevStage.isForwarded = FORWADED.REG_A;
-            }
-            else if(regB == destReg)
-            {
-                prevStage.storeIntData = loadIntData;
-                prevStage.isForwarded = FORWADED.REG_B;
-            }
+            loadIntData = simulator.memory.getIntDataAtAddr(aluIntData);
         }
         else
         {

@@ -1,7 +1,7 @@
 package mips64;
 
 public class ExMemStage {
-    enum FORWADED {NONE, REG_A, REG_B};
+    enum FORWADED {NONE, REG_A, REG_B, ALL};
     PipelineSimulator simulator;
     boolean shouldWriteback = false;
     int instPC;
@@ -34,8 +34,13 @@ public class ExMemStage {
             regB = prevStage.regB;
             aluIntData = 0;
 
-            int regA = isForwarded == FORWADED.REG_A ? storeIntData : prevStage.regAData;
-            int regB = isForwarded == FORWADED.REG_B ? storeIntData : prevStage.regBData;
+            int regA = prevStage.regAData;
+            int regB = prevStage.regBData;
+            if(isForwarded == FORWADED.REG_A || isForwarded == FORWADED.ALL)
+                regA = storeIntData;
+            if(isForwarded == FORWADED.REG_B || isForwarded == FORWADED.ALL)
+                regB = storeIntData;
+
             int imm = prevStage.immediate;
 
             if(isForwarded != FORWADED.NONE)
@@ -101,15 +106,31 @@ public class ExMemStage {
                 break;
             }
             case Instruction.INST_BEQ:
+                if(regA != regB)
+                    break;
             case Instruction.INST_BNE:
+                if(regA == regB)
+                    break;
             case Instruction.INST_BLTZ:
+                if(regA >= regB)
+                    break;
             case Instruction.INST_BLEZ:
+                if(regA > regB)
+                    break;
             case Instruction.INST_BGTZ:
+                if(regA <= regB)
+                    break;
             case Instruction.INST_BGEZ:
+                if(regA < regB)
+                    break;
+                simulator.pc.pc += imm;
+                prevStage.shouldWriteback = false;
+                break;
             case Instruction.INST_JR:
+            case Instruction.INST_JALR:
             case Instruction.INST_JAL:
                 aluIntData = imm;
-            case Instruction.INST_JALR:
+                break;
             default:
                 break;
             }
