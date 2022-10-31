@@ -17,6 +17,7 @@ public class MemWbStage {
     public MemWbStage(PipelineSimulator sim) {
         simulator = sim;
         opcode = Instruction.getOpcodeFromName("NOP");
+        halted = false;
     }
 
     public boolean isHalted() {
@@ -30,10 +31,10 @@ public class MemWbStage {
             return;
         }
 
-        if(!shouldWriteback)
-        {
-            return;
-        }
+        // if(!shouldWriteback)
+        // {
+        //     return;
+        // }
 
         ExMemStage prevStage = simulator.getExMemStage();
         shouldWriteback = prevStage.shouldWriteback;

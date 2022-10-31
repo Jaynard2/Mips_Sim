@@ -35,13 +35,13 @@ public class IdExStage {
 
         if (inst instanceof ITypeInst){
             regAData = getIntRegister(((ITypeInst)inst).getRT());
-            destReg = getIntRegister(((ITypeInst)inst).getRS());
+            destReg = ((ITypeInst)inst).getRS();
             immediate = ((ITypeInst)inst).getImmed();
         }
         else if (inst instanceof RTypeInst){
             regAData = getIntRegister(((RTypeInst)inst).getRT());
             regBData = getIntRegister(((RTypeInst)inst).getRD());
-            destReg = getIntRegister(((RTypeInst)inst).getRS());
+            destReg = ((RTypeInst)inst).getRS();
             //immediate = 0;
         }
         else if (inst instanceof JTypeInst){
