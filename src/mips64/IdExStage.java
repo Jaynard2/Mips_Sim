@@ -9,6 +9,7 @@ public class IdExStage {
     int regAData;
     int regBData;
     int immediate;
+    int inst;
 
     int registers[];
 
@@ -23,5 +24,22 @@ public class IdExStage {
     }
 
     public void update() {
+        instPC = simulator.getIfIdStage().instPC;
+        opcode = simulator.getIfIdStage().opcode;
+
+        Instruction decodedInstruction = Instruction.getInstructionFromOper(opcode);
+
+        if (decodedInstruction instanceof ITypeInst){
+            regAData = getIntRegister(((ITypeInst)decodedInstruction).getRT());
+            regBData = getIntRegister(((ITypeInst)decodedInstruction).getRS());
+            immediate = ((ITypeInst)decodedInstruction).getImmed();
+        }
+        else if (decodedInstruction instanceof RTypeInst){
+            regAData = getIntRegister(((RTypeInst)decodedInstruction).getRT());
+            regBData = getIntRegister(((RTypeInst)decodedInstruction).getRS());
+        }
+        else if (decodedInstruction instanceof JTypeInst){
+            immediate = ((JTypeInst)decodedInstruction).getOffset();
+        }
     }
 }
