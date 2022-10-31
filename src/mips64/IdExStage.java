@@ -17,6 +17,9 @@ public class IdExStage {
     int shftAmount;
     Instruction inst;
 
+    private final int jumpCode = Instruction.getOpcodeFromName("J");
+    private final int jalCode = Instruction.getOpcodeFromName("JAL");
+
     public IdExStage(PipelineSimulator sim) {
         simulator = sim;
         opcode = Instruction.getOpcodeFromName("NOP");
@@ -38,6 +41,8 @@ public class IdExStage {
             destReg = -1;
             regA = -1;
             regB = -1;
+            regAData = 0;
+            regBData = 0;
 
             Registers regs = simulator.regs;
             regs.setConcerned(FORWARD_STAGES.ALL);
@@ -58,9 +63,15 @@ public class IdExStage {
                 //immediate = 0;
             }
             else if (inst instanceof JTypeInst){
-                //regAData = 0;
-                //regBData = 0;
-                immediate = ((JTypeInst)inst).getOffset();
+                if(opcode == jumpCode || opcode == jalCode)
+                {
+                    if(opcode == jalCode)
+                    {
+                        immediate = simulator.pc.pc;
+                        destReg = 31;
+                    }
+                    simulator.pc.pc += ((JTypeInst)inst).getOffset();
+                }
             }
         }
     }

@@ -32,6 +32,7 @@ public class ExMemStage {
             simulator.regs.setExmemCur(destReg);
             regA = prevStage.regA;
             regB = prevStage.regB;
+            aluIntData = 0;
 
             int regA = isForwarded == FORWADED.REG_A ? storeIntData : prevStage.regAData;
             int regB = isForwarded == FORWADED.REG_B ? storeIntData : prevStage.regBData;
@@ -105,10 +106,12 @@ public class ExMemStage {
             case Instruction.INST_BLEZ:
             case Instruction.INST_BGTZ:
             case Instruction.INST_BGEZ:
-            case Instruction.INST_J:
             case Instruction.INST_JR:
             case Instruction.INST_JAL:
+                aluIntData = imm;
             case Instruction.INST_JALR:
+            default:
+                break;
             }
         }
         

@@ -17,6 +17,7 @@ public class MemWbStage {
     final int haltCode = Instruction.getOpcodeFromName("HALT");
     final int loadCode = Instruction.getOpcodeFromName("LW");
     final int storeCode = Instruction.getOpcodeFromName("SW");
+    final int jalCode = Instruction.getOpcodeFromName("JAL");
 
     public MemWbStage(PipelineSimulator sim) {
         simulator = sim;
@@ -44,16 +45,32 @@ public class MemWbStage {
         regs.setConcerned(FORWARD_STAGES.NONE);
         regs.setMemwbCur(destReg);
         if (opcode == loadCode)
-            regs.writeReg(destReg, loadIntData);
-        else if(opcode == storeCode)
         {
-            MemoryModel mem = simulator.getMemory();
-            mem.setIntDataAtAddr(aluIntData, regs.readReg(destReg));
-            regs.setMemwbCur(-1);
+            loadIntData =  simulator.getMemory().getIntDataAtAddr(aluIntData);
+            // Make reading from mem take 1 clk
+            if(!simulator.stall)
+            {
+                regs.writeReg(destReg, loadIntData);
+                loadIntData = -1;
+            }
         }
-        else if(destReg != -1)
+        else
         {
-            regs.writeReg(destReg, aluIntData);
+            loadIntData = -1;
+            if(opcode == storeCode)
+            {
+                MemoryModel mem = simulator.getMemory();
+                mem.setIntDataAtAddr(aluIntData, regs.readReg(destReg));
+                regs.setMemwbCur(-1);
+            }
+            else if(opcode == jalCode)
+            {
+                regs.writeReg(destReg, aluIntData);
+            }
+            else if(destReg != -1)
+            {
+                regs.writeReg(destReg, aluIntData);
+            }
         }
 
         ExMemStage prevStage = simulator.getExMemStage();
@@ -65,10 +82,8 @@ public class MemWbStage {
         // Need to look 2 behind bc of stall
         int regA = simulator.idEx.regA;
         int regB = simulator.idEx.regB;
-
         if(opcode == loadCode && !simulator.stall)
         {
-            loadIntData =  simulator.getMemory().getIntDataAtAddr(aluIntData);
             simulator.stall = true;
             if(regA == destReg)
             {
@@ -83,7 +98,6 @@ public class MemWbStage {
         }
         else
         {
-            loadIntData = -1;
             simulator.stall = false;
         }
     }
