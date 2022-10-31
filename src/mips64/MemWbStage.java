@@ -9,6 +9,8 @@ public class MemWbStage {
     int opcode;
     int aluIntData;
     int loadIntData;
+    int destReg;
+    int regs[];
 
     final int haltCode = Instruction.getOpcodeFromName("HALT");
     final int loadCode = Instruction.getOpcodeFromName("LW");
@@ -17,6 +19,7 @@ public class MemWbStage {
     public MemWbStage(PipelineSimulator sim) {
         simulator = sim;
         opcode = Instruction.getOpcodeFromName("NOP");
+        regs = simulator.getIdExStage().registers;
         halted = false;
     }
 
@@ -36,33 +39,28 @@ public class MemWbStage {
         //     return;
         // }
 
+        if(opcode == loadCode)
+        {
+            loadIntData =  simulator.getMemory().getIntDataAtAddr(aluIntData);
+            regs[destReg] = loadIntData;
+        }
+        else if(opcode == storeCode)
+        {
+            MemoryModel mem = simulator.getMemory();
+            mem.setIntDataAtAddr(aluIntData, regs[destReg]);
+        }
+        else if(destReg != -1)
+        {
+            regs[destReg] = aluIntData;
+        }
+
         ExMemStage prevStage = simulator.getExMemStage();
         shouldWriteback = prevStage.shouldWriteback;
         instPC = prevStage.instPC;
         opcode = prevStage.opcode;
         aluIntData = prevStage.aluIntData;
-        int destReg = prevStage.destReg;
-        int regs[] = simulator.getIdExStage().registers;
+        destReg = prevStage.destReg;
         loadIntData = -1;
-
-        if(opcode == loadCode)
-        {
-            loadIntData =  simulator.getMemory().getIntDataAtAddr(aluIntData);
-            regs[destReg] = loadIntData;
-            return;
-        }
-
-        if(opcode == storeCode)
-        {
-            MemoryModel mem = simulator.getMemory();
-            mem.setIntDataAtAddr(aluIntData, regs[destReg]);
-        }
-        
-        if(destReg != -1)
-        {
-            regs[destReg] = aluIntData;
-            return;
-        }
 
     }
 }
