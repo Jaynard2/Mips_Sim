@@ -1,5 +1,6 @@
 package mips64;
 
+import mips64.ExMemStage.FORWADED;
 import mips64.Registers.FORWARD_STAGES;
 
 public class MemWbStage {
@@ -42,11 +43,8 @@ public class MemWbStage {
         Registers regs = simulator.regs;
         regs.setConcerned(FORWARD_STAGES.NONE);
         regs.setMemwbCur(destReg);
-        if(opcode == loadCode)
-        {
-            loadIntData =  simulator.getMemory().getIntDataAtAddr(aluIntData);
+        if (opcode == loadCode)
             regs.writeReg(destReg, loadIntData);
-        }
         else if(opcode == storeCode)
         {
             MemoryModel mem = simulator.getMemory();
@@ -64,20 +62,29 @@ public class MemWbStage {
         opcode = prevStage.opcode;
         aluIntData = prevStage.aluIntData;
         destReg = prevStage.destReg;
+        // Need to look 2 behind bc of stall
+        int regA = simulator.idEx.regA;
+        int regB = simulator.idEx.regB;
 
-        int regA = prevStage.regA;
-        int regB = prevStage.regB;
-        if(regA == destReg || regB == destReg)
+        if(opcode == loadCode && !simulator.stall)
         {
-            prevStage.storeIntData = aluIntData;
+            loadIntData =  simulator.getMemory().getIntDataAtAddr(aluIntData);
+            simulator.stall = true;
+            if(regA == destReg)
+            {
+                prevStage.storeIntData = loadIntData;
+                prevStage.isForwarded = FORWADED.REG_A;
+            }
+            else if(regB == destReg)
+            {
+                prevStage.storeIntData = loadIntData;
+                prevStage.isForwarded = FORWADED.REG_B;
+            }
         }
-
-        IdExStage idexStage = simulator.getIdExStage();
-        regA = idexStage.regA;
-        regB = idexStage.regB;
-        if(regA == destReg || regB == destReg)
+        else
         {
-            idexStage.storeIntData = aluIntData;
+            loadIntData = -1;
+            simulator.stall = false;
         }
     }
 }

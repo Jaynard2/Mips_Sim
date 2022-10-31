@@ -1,24 +1,24 @@
 package mips64;
 
 public class ExMemStage {
-
+    enum FORWADED {NONE, REG_A, REG_B};
     PipelineSimulator simulator;
     boolean shouldWriteback = false;
     int instPC;
     int opcode;
     int aluIntData;
     int storeIntData;
-    int destReg;    
+    int destReg;
+    FORWADED isForwarded;
     int regA;
     int regB;
-    boolean forRegA;
-
     Instruction decodedInstruction;
 
     public ExMemStage(PipelineSimulator sim) {
         simulator = sim;
         opcode = Instruction.getOpcodeFromName("NOP");
         storeIntData = 0;
+        isForwarded = FORWADED.NONE;
     }
 
     public void update() {
@@ -29,14 +29,19 @@ public class ExMemStage {
             opcode = prevStage.opcode;
             shouldWriteback = prevStage.shouldWriteback;
             destReg = prevStage.destReg;
+            simulator.regs.setExmemCur(destReg);
             regA = prevStage.regA;
             regB = prevStage.regB;
-            storeIntData = prevStage.storeIntData;
-            simulator.regs.setExmemCur(destReg);
 
-            int regA = prevStage.regAData;
-            int regB = prevStage.regBData;
+            int regA = isForwarded == FORWADED.REG_A ? storeIntData : prevStage.regAData;
+            int regB = isForwarded == FORWADED.REG_B ? storeIntData : prevStage.regBData;
             int imm = prevStage.immediate;
+
+            if(isForwarded != FORWADED.NONE)
+            {
+                storeIntData = 0;
+                isForwarded = FORWADED.NONE;
+            }
 
             switch(opcode)
             {
@@ -44,8 +49,8 @@ public class ExMemStage {
                 aluIntData = regA + regB;
                 break;
             case Instruction.INST_LW:
-                simulator.stall = true;
             case Instruction.INST_SW:
+                simulator.regs.setExmemCur(-1);
             case Instruction.INST_ADDI:
                 aluIntData = regA + imm;
                 break;
@@ -78,25 +83,19 @@ public class ExMemStage {
                 break;
             case Instruction.INST_SLL:
             {
-                String name = Instruction.getNameFromOpcode(opcode);
-                RTypeInst inst = (RTypeInst)Instruction.getInstructionFromName(name);
-                int shiftAmount = inst.getShamt();
+                int shiftAmount = prevStage.shftAmount;
                 aluIntData = regA << shiftAmount;
                 break;
             }
             case Instruction.INST_SRL:
             {
-                String name = Instruction.getNameFromOpcode(opcode);
-                RTypeInst inst = (RTypeInst)Instruction.getInstructionFromName(name);
-                int shiftAmount = inst.getShamt();
+                int shiftAmount = prevStage.shftAmount;
                 aluIntData = regA >> shiftAmount;
                 break;
             }
             case Instruction.INST_SRA:
             {
-                String name = Instruction.getNameFromOpcode(opcode);
-                RTypeInst inst = (RTypeInst)Instruction.getInstructionFromName(name);
-                int shiftAmount = inst.getShamt();
+                int shiftAmount = prevStage.shftAmount;
                 aluIntData = regA >>> shiftAmount;
                 break;
             }
@@ -111,10 +110,6 @@ public class ExMemStage {
             case Instruction.INST_JAL:
             case Instruction.INST_JALR:
             }
-        }
-        else
-        {
-            simulator.stall = false;
         }
         
     }

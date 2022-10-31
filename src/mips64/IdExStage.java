@@ -8,22 +8,19 @@ public class IdExStage {
     boolean shouldWriteback = false;
     int instPC;
     int opcode;
-    int regA;
-    int regB;
     int regAData;
     int regBData;
+    int regA;
+    int regB;
     int immediate;
     int destReg;
-    int storeIntData;
-    //int inst;
+    int shftAmount;
     Instruction inst;
-    boolean forRegA;
 
     public IdExStage(PipelineSimulator sim) {
         simulator = sim;
         opcode = Instruction.getOpcodeFromName("NOP");
         inst = Instruction.getInstructionFromName("NOP");
-        storeIntData = 0;
     }
 
     Integer getIntRegister(int regNum) {
@@ -39,19 +36,25 @@ public class IdExStage {
             opcode = simulator.getIfIdStage().opcode;
             inst = simulator.getIfIdStage().inst;
             destReg = -1;
+            regA = -1;
+            regB = -1;
 
             Registers regs = simulator.regs;
             regs.setConcerned(FORWARD_STAGES.ALL);
 
             if (inst instanceof ITypeInst){
-                regAData = regs.readReg(((ITypeInst)inst).getRS());
+                regA = ((ITypeInst)inst).getRS();
+                regAData = regs.readReg(regA);
                 destReg = ((ITypeInst)inst).getRT();
                 immediate = ((ITypeInst)inst).getImmed();
             }
             else if (inst instanceof RTypeInst){
-                regAData = regs.readReg(((RTypeInst)inst).getRS());
-                regBData = regs.readReg(((RTypeInst)inst).getRT());
+                regA = ((RTypeInst)inst).getRS();
+                regB = ((RTypeInst)inst).getRT();
+                regAData = regs.readReg(regA);
+                regBData = regs.readReg(regB);
                 destReg = ((RTypeInst)inst).getRD();
+                shftAmount = ((RTypeInst)inst).getShamt();
                 //immediate = 0;
             }
             else if (inst instanceof JTypeInst){
