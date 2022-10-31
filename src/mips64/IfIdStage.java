@@ -9,7 +9,8 @@ public class IfIdStage {
 
   public IfIdStage(PipelineSimulator sim) {
     simulator = sim;
-
+    inst = Instruction.getInstructionFromName("NOP");
+    opcode = inst.getOpcode();
   }
 
   public void update() 
