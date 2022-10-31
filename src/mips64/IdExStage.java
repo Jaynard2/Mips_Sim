@@ -1,5 +1,7 @@
 package mips64;
 
+import java.io.Console;
+
 public class IdExStage {
 
     PipelineSimulator simulator;
@@ -27,9 +29,11 @@ public class IdExStage {
         instPC = simulator.getIfIdStage().instPC;
         opcode = simulator.getIfIdStage().opcode;
 
-        Instruction decodedInstruction = Instruction.getInstructionFromOper(opcode);
+        Instruction decodedInstruction = Instruction.getInstructionFromName(Instruction.getNameFromOpcode(opcode));
 
-        if (decodedInstruction instanceof ITypeInst){
+        if (Instruction.getNameFromOpcode(opcode) == ""){
+        }
+        else if (decodedInstruction instanceof ITypeInst){
             regAData = getIntRegister(((ITypeInst)decodedInstruction).getRT());
             regBData = getIntRegister(((ITypeInst)decodedInstruction).getRS());
             immediate = ((ITypeInst)decodedInstruction).getImmed();
@@ -37,8 +41,11 @@ public class IdExStage {
         else if (decodedInstruction instanceof RTypeInst){
             regAData = getIntRegister(((RTypeInst)decodedInstruction).getRT());
             regBData = getIntRegister(((RTypeInst)decodedInstruction).getRS());
+            //immediate = 0;
         }
         else if (decodedInstruction instanceof JTypeInst){
+            //regAData = 0;
+            //regBData = 0;
             immediate = ((JTypeInst)decodedInstruction).getOffset();
         }
     }
