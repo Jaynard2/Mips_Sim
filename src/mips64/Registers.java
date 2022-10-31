@@ -2,7 +2,7 @@ package mips64;
 
 public class Registers 
 {
-    public enum FORWARD_STAGES { MEMWB, ALL };
+    public enum FORWARD_STAGES { NONE, MEMWB, ALL };
     private int registers[];
     private int exmemCurReg;
     private int memwbCurReg;
@@ -38,5 +38,10 @@ public class Registers
             regNum = sim.getMemWbStage().destReg;
 
         return registers[regNum];
+    }
+
+    public void writeReg(int reg, int value)
+    {
+        registers[reg] = value;
     }
 }

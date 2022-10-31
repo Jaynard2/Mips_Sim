@@ -16,6 +16,7 @@ public class PipelineSimulator {
     IdExStage idEx;
     ExMemStage exMem;
     MemWbStage memWb;
+    Registers regs;
 
     int breakAddress = -1;
     boolean quietMode = true;
@@ -30,6 +31,8 @@ public class PipelineSimulator {
       catch (Exception ex) {
         ex.printStackTrace();
       }
+
+      regs = new Registers();
     }
        
     public PipelineSimulator(String fileName) {
@@ -43,6 +46,8 @@ public class PipelineSimulator {
         isMemoryLoaded = false;
       }
       reset();
+
+      regs = new Registers();
     }
 
     public MemoryModel getMemory() {
