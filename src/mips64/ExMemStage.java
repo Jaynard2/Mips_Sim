@@ -8,6 +8,7 @@ public class ExMemStage {
     int opcode;
     int aluIntData;
     int storeIntData;
+    int destReg;
 
     Instruction decodedInstruction;
 
@@ -21,6 +22,7 @@ public class ExMemStage {
         instPC = prevStage.instPC;
         opcode = prevStage.opcode;
         shouldWriteback = prevStage.shouldWriteback;
+        destReg = prevStage.destReg;
 
         int regA = prevStage.regAData;
         int regB = prevStage.regBData;
@@ -31,6 +33,8 @@ public class ExMemStage {
         case Instruction.INST_ADD:
             aluIntData = regA + regB;
             break;
+        case Instruction.INST_LW:
+        case Instruction.INST_SW:
         case Instruction.INST_ADDI:
             aluIntData = regA + imm;
             break;
