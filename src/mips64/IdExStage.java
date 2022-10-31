@@ -10,13 +10,16 @@ public class IdExStage {
     int regBData;
     int immediate;
 
+    int registers[];
+
     public IdExStage(PipelineSimulator sim) {
         simulator = sim;
+        registers = new int[32];
+        registers[0] = 0;
     }
 
-    int getIntRegister(int regNum) {
-        // todo - add supporting code
-        return 0;
+    Integer getIntRegister(int regNum) {
+        return registers[regNum];
     }
 
     public void update() {
