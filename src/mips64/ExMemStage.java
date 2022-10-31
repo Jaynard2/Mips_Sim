@@ -13,6 +13,7 @@ public class ExMemStage {
 
     public ExMemStage(PipelineSimulator sim) {
         simulator = sim;
+        opcode = Instruction.getOpcodeFromName("NOP");
     }
 
     public void update() {
