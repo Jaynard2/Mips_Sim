@@ -39,7 +39,7 @@ public class Registers
             return sim.exMem.aluIntData;
         if(regNum == memwbCurReg && 
             (concernedStage == FORWARD_STAGES.ALL || concernedStage == FORWARD_STAGES.MEMWB))
-            return sim.memWb.aluIntData;
+            return sim.memWb.forwardData;
 
         return registers[regNum];
     }

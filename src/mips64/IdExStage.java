@@ -5,7 +5,7 @@ import mips64.Registers.FORWARD_STAGES;
 public class IdExStage {
 
     PipelineSimulator simulator;
-    boolean shouldWriteback = false;
+    boolean shouldWriteback = true;
     int instPC;
     int opcode;
     int regAData;
@@ -40,7 +40,6 @@ public class IdExStage {
             instPC = simulator.getIfIdStage().instPC;
             opcode = simulator.getIfIdStage().opcode;
             inst = simulator.getIfIdStage().inst;
-            shouldWriteback = true;
             destReg = -1;
             regA = -1;
             regB = -1;
@@ -57,7 +56,7 @@ public class IdExStage {
                 regBData = regs.readReg(destReg);
                 immediate = ((ITypeInst)inst).getImmed();
 
-                if(opcode == jrCode || opcode == jalrCode)
+                if(shouldWriteback && (opcode == jrCode || opcode == jalrCode))
                 {
                     if(opcode == jalrCode)
                     {
@@ -76,7 +75,7 @@ public class IdExStage {
                 shftAmount = ((RTypeInst)inst).getShamt();
             }
             else if (inst instanceof JTypeInst){
-                if(opcode == jumpCode || opcode == jalCode)
+                if(shouldWriteback && (opcode == jumpCode || opcode == jalCode))
                 {
                     if(opcode == jalCode)
                     {

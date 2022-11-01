@@ -11,6 +11,7 @@ public class MemWbStage {
     int instPC;
     int opcode;
     int aluIntData;
+    int forwardData;
     int loadIntData;
     int destReg;
 
@@ -29,11 +30,6 @@ public class MemWbStage {
     }
 
     public void update() {
-        if(opcode == haltCode)
-        {
-            halted = true;
-            return;
-        }
 
         Registers regs = simulator.regs;
         regs.setConcerned(FORWARD_STAGES.NONE);
@@ -43,6 +39,12 @@ public class MemWbStage {
 
         if(shouldWriteback)
         {
+            if(opcode == haltCode)
+            {
+                halted = true;
+                return;
+            }
+
             if (opcode == loadCode)
             {
                 if(simulator.stall)
@@ -81,16 +83,26 @@ public class MemWbStage {
         opcode = prevStage.opcode;
         aluIntData = prevStage.aluIntData;
         destReg = prevStage.destReg;
-        regs.setMemwbCur(destReg);
-
-        if(opcode == loadCode && !simulator.stall)
+        if(shouldWriteback)
         {
-            simulator.stall = true;
-            loadIntData = simulator.memory.getIntDataAtAddr(aluIntData);
+            regs.setMemwbCur(destReg);
+            forwardData = aluIntData;
+
+            if(opcode == loadCode)
+            {
+                if(!simulator.stall)
+                {
+                    simulator.stall = true;
+                    loadIntData = simulator.memory.getIntDataAtAddr(aluIntData);
+                }
+                else
+                {
+                    simulator.stall = false;
+                }
+                forwardData = simulator.memory.getIntDataAtAddr(aluIntData);
+            }
         }
         else
-        {
-            simulator.stall = false;
-        }
+            regs.setMemwbCur(-1);
     }
 }
