@@ -37,12 +37,12 @@ public class ExMemStage {
             if(!shouldWriteback)
                 return;
 
-            int regA = prevStage.regAData;
-            int regB = prevStage.regBData;
+            int regAData = prevStage.regAData;
+            int regBData = prevStage.regBData;
             if(isForwarded == FORWADED.REG_A || isForwarded == FORWADED.ALL)
-                regA = storeIntData;
+                regAData = storeIntData;
             if(isForwarded == FORWADED.REG_B || isForwarded == FORWADED.ALL)
-                regB = storeIntData;
+                regBData = storeIntData;
 
             int imm = prevStage.immediate;
 
@@ -55,62 +55,62 @@ public class ExMemStage {
             switch(opcode)
             {
             case Instruction.INST_ADD:
-                aluIntData = regA + regB;
+                aluIntData = regAData + regBData;
                 break;
             case Instruction.INST_LW:
             case Instruction.INST_SW:
                 simulator.regs.setExmemCur(-1);
             case Instruction.INST_ADDI:
-                aluIntData = regA + imm;
+                aluIntData = regAData + imm;
                 break;
             case Instruction.INST_SUB:
-                aluIntData = regA - regB;
+                aluIntData = regAData - regBData;
                 break;
             case Instruction.INST_DIV:
-                aluIntData = regA / regB;
+                aluIntData = regAData / regBData;
                 break;
             case Instruction.INST_MUL:
-                aluIntData = regA * regB;
+                aluIntData = regAData * regBData;
                 break;
             case Instruction.INST_AND:
-                aluIntData = regA & regB;
+                aluIntData = regAData & regBData;
                 break;
             case Instruction.INST_ANDI:
-                aluIntData = regA & imm;
+                aluIntData = regAData & imm;
                 break;
             case Instruction.INST_OR:
-                aluIntData = regA | regB;
+                aluIntData = regAData | regBData;
                 break;
             case Instruction.INST_ORI:
-                aluIntData = regA | imm;
+                aluIntData = regAData | imm;
                 break;
             case Instruction.INST_XOR:
-                aluIntData = regA ^ regB;
+                aluIntData = regAData ^ regBData;
                 break;
             case Instruction.INST_XORI:
-                aluIntData = regA ^ imm;
+                aluIntData = regAData ^ imm;
                 break;
             case Instruction.INST_SLL:
             {
                 int shiftAmount = prevStage.shftAmount;
-                aluIntData = regA << shiftAmount;
+                aluIntData = regAData << shiftAmount;
                 break;
             }
             case Instruction.INST_SRL:
             {
                 int shiftAmount = prevStage.shftAmount;
-                aluIntData = regA >> shiftAmount;
+                aluIntData = regAData >> shiftAmount;
                 break;
             }
             case Instruction.INST_SRA:
             {
                 int shiftAmount = prevStage.shftAmount;
-                aluIntData = regA >>> shiftAmount;
+                aluIntData = regAData >>> shiftAmount;
                 break;
             }
             case Instruction.INST_BEQ:
                 destReg = -1;
-                if(regA == regB)
+                if(regAData == regBData)
                 {
                     simulator.pc.pc += imm;
                     prevStage.shouldWriteback = false;
@@ -120,7 +120,7 @@ public class ExMemStage {
                 break;
             case Instruction.INST_BNE:
                 destReg = -1;
-                if(regA != regB)
+                if(regAData != regBData)
                 {
                     simulator.pc.pc += imm;
                     prevStage.shouldWriteback = false;
@@ -130,7 +130,7 @@ public class ExMemStage {
                 break;
             case Instruction.INST_BLTZ:
                 destReg = -1;
-                if(regA < regB)
+                if(regAData < regBData)
                 {
                     simulator.pc.pc += imm;
                     prevStage.shouldWriteback = false;
@@ -140,7 +140,7 @@ public class ExMemStage {
                 break;
             case Instruction.INST_BLEZ:
                 destReg = -1;
-                if(regA <= regB)
+                if(regAData <= regBData)
                 {
                     simulator.pc.pc += imm;
                     prevStage.shouldWriteback = false;
@@ -150,7 +150,7 @@ public class ExMemStage {
                 break;
             case Instruction.INST_BGTZ:
                 destReg = -1;
-                if(regA > regB)
+                if(regAData > regBData)
                 {
                     simulator.pc.pc += imm;
                     prevStage.shouldWriteback = false;
@@ -160,7 +160,7 @@ public class ExMemStage {
                 break;
             case Instruction.INST_BGEZ:
                 destReg = -1;
-                if(regA >= regB)
+                if(regAData >= regBData)
                 {
                     simulator.pc.pc += imm;
                     prevStage.shouldWriteback = false;
