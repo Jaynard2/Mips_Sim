@@ -6,6 +6,7 @@ public class IdExStage {
 
     PipelineSimulator simulator;
     boolean shouldWriteback = true;
+    boolean nextWriteBack = true;
     int instPC;
     int opcode;
     int regAData;
@@ -45,6 +46,8 @@ public class IdExStage {
             regB = -1;
             regAData = 0;
             regBData = 0;
+            shouldWriteback = simulator.getIfIdStage().shouldWriteback && nextWriteBack;
+            nextWriteBack = true;
 
             Registers regs = simulator.regs;
             regs.setConcerned(FORWARD_STAGES.ALL);
@@ -62,8 +65,9 @@ public class IdExStage {
                     {
                         simulator.regs.writeReg(31, simulator.pc.pc);
                     }
-                    simulator.pc.pc = regAData;
+                    simulator.pc.nextPC = regAData;
                     destReg = -1;
+                    simulator.getIfIdStage().nextWriteBack = false;
                 }
             }
             else if (inst instanceof RTypeInst){
@@ -81,8 +85,9 @@ public class IdExStage {
                     {
                         simulator.regs.writeReg(31, simulator.pc.pc);
                     }
-                    simulator.pc.pc += ((JTypeInst)inst).getOffset();
+                    simulator.pc.nextPC = simulator.pc.pc + ((JTypeInst)inst).getOffset();
                     destReg = -1;
+                    simulator.getIfIdStage().nextWriteBack = false;
                 }
             }
         }

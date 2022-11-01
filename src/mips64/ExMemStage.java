@@ -28,8 +28,6 @@ public class ExMemStage {
             instPC = prevStage.instPC;
             opcode = prevStage.opcode;
             shouldWriteback = prevStage.shouldWriteback;
-            //Set for next clock cycle
-            prevStage.shouldWriteback = true;
             destReg = prevStage.destReg;
             simulator.regs.setExmemCur(destReg);
             regA = prevStage.regA;
@@ -118,8 +116,9 @@ public class ExMemStage {
                 simulator.regs.setExmemCur(-1);
                 if(regAData == regBData)
                 {
-                    simulator.pc.pc += imm - 4;
-                    prevStage.shouldWriteback = false;
+                    simulator.pc.nextPC = simulator.pc.pc + imm - 4;
+                    prevStage.nextWriteBack = false;
+                    simulator.getIfIdStage().nextWriteBack = false;
                     break;
                 }
                 shouldWriteback = false;
@@ -129,8 +128,9 @@ public class ExMemStage {
                 simulator.regs.setExmemCur(-1);
                 if(regAData != regBData)
                 {
-                    simulator.pc.pc += imm - 4;
-                    prevStage.shouldWriteback = false;
+                    simulator.pc.nextPC = simulator.pc.pc + imm - 4;
+                    prevStage.nextWriteBack = false;
+                    simulator.getIfIdStage().nextWriteBack = false;
                     break;
                 }
                 shouldWriteback = false;
@@ -140,8 +140,9 @@ public class ExMemStage {
                 simulator.regs.setExmemCur(-1);
                 if(regAData < 0)
                 {
-                    simulator.pc.pc += imm - 4;
-                    prevStage.shouldWriteback = false;
+                    simulator.pc.nextPC = simulator.pc.pc + imm - 4;
+                    prevStage.nextWriteBack = false;
+                    simulator.getIfIdStage().nextWriteBack = false;
                     break;
                 }
                 shouldWriteback = false;
@@ -151,8 +152,9 @@ public class ExMemStage {
                 simulator.regs.setExmemCur(-1);
                 if(regAData <= 0)
                 {
-                    simulator.pc.pc += imm - 4;
-                    prevStage.shouldWriteback = false;
+                    simulator.pc.nextPC = simulator.pc.pc + imm - 4;
+                    prevStage.nextWriteBack = false;
+                    simulator.getIfIdStage().nextWriteBack = false;
                     break;
                 }
                 shouldWriteback = false;
@@ -162,8 +164,9 @@ public class ExMemStage {
                 simulator.regs.setExmemCur(-1);
                 if(regAData > 0)
                 {
-                    simulator.pc.pc += imm - 4;
-                    prevStage.shouldWriteback = false;
+                    simulator.pc.nextPC = simulator.pc.pc + imm - 4;
+                    prevStage.nextWriteBack = false;
+                    simulator.getIfIdStage().nextWriteBack = false;
                     break;
                 }
                 shouldWriteback = false;
@@ -173,8 +176,9 @@ public class ExMemStage {
                 simulator.regs.setExmemCur(-1);
                 if(regAData >= 0)
                 {
-                    simulator.pc.pc += imm - 4;
-                    prevStage.shouldWriteback = false;
+                    simulator.pc.nextPC = simulator.pc.pc + imm - 4;
+                    prevStage.nextWriteBack = false;
+                    simulator.getIfIdStage().nextWriteBack = false;
                     break;
                 }
                 shouldWriteback = false;

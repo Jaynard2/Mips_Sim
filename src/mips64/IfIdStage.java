@@ -5,6 +5,8 @@ public class IfIdStage {
   int instPC;
   int opcode;
   Instruction inst;
+  boolean shouldWriteback;
+  boolean nextWriteBack;
 
 
   public IfIdStage(PipelineSimulator sim) {
@@ -17,9 +19,11 @@ public class IfIdStage {
   {
     if(!simulator.stall)
     {
+      shouldWriteback = nextWriteBack;
       instPC = simulator.getPCStage().getPC();
       inst = simulator.getMemory().getInstAtAddr(instPC);
       opcode = inst.getOpcode();
+      nextWriteBack = true;
     }
   }
 }

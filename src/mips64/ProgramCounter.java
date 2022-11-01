@@ -3,6 +3,7 @@ package mips64;
 public class ProgramCounter {
 
   PipelineSimulator simulator;
+  int nextPC;
   int pc;
 
   public ProgramCounter(PipelineSimulator sim) {
@@ -22,8 +23,12 @@ public class ProgramCounter {
     pc += 4;
   }
 
-  public void update() {
+  public void update() 
+  {
     if(!simulator.stall)
-      incrPC();
+    {
+      pc = nextPC;
+      nextPC += 4;
+    }
   }
 }
