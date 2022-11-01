@@ -1,0 +1,18 @@
+Begin Assembly
+ADDI R1, R0, -4
+ADD R2, R1, R1
+SUB R3, R2, R1
+ADDI R31, R0, -1
+MUL R4, R1, R31
+ORI R5, R4, 5
+ANDI R6, R5, 1
+ADDI R31, R0, 2
+DIV R7, R2, R31
+SLL R8, R4, 1
+SRL R9, R4, 1
+SRA R10, R1, 1
+XORI R11, R7, 1
+HALT
+End Assembly
+Begin Data 4000 10
+End Data

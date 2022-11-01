@@ -102,13 +102,13 @@ public class ExMemStage {
             case Instruction.INST_SRL:
             {
                 int shiftAmount = prevStage.shftAmount;
-                aluIntData = regAData >> shiftAmount;
+                aluIntData = regAData >>> shiftAmount;
                 break;
             }
             case Instruction.INST_SRA:
             {
                 int shiftAmount = prevStage.shftAmount;
-                aluIntData = regAData >>> shiftAmount;
+                aluIntData = regAData >> shiftAmount;
                 break;
             }
             case Instruction.INST_BEQ:

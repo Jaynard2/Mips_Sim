@@ -12,6 +12,7 @@ public class Registers
     public Registers(PipelineSimulator simulator)
     {
         registers = new int[32];
+        registers[0] = 0;
         exmemCurReg = -1;
         memwbCurReg = -1;
         sim = simulator;
