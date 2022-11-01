@@ -37,7 +37,10 @@ public class ExMemStage {
             aluIntData = 0;
 
             if(!shouldWriteback)
+            {
+                simulator.regs.setExmemCur(-1);
                 return;
+            }
 
             int regAData = prevStage.regAData;
             int regBData = prevStage.regBData;

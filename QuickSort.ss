@@ -10,7 +10,7 @@
 0:  addi R30, R0, 5000
 4:  addi R1, R0, 4000
 8:  addi R2, R0, 4000
-12:  addi R3, R0, 4008
+12:  addi R3, R0, 4996
 16:  jal sort
 20:  halt
 LABEL sort
