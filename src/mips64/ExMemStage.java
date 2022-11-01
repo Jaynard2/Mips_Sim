@@ -183,10 +183,14 @@ public class ExMemStage {
                 }
                 shouldWriteback = false;
                 break;
-            case Instruction.INST_JR:
             case Instruction.INST_JALR:
-            case Instruction.INST_JAL:
-                aluIntData = imm;
+                simulator.regs.writeReg(31, simulator.pc.pc + 4);
+            case Instruction.INST_JR:
+                destReg = -1;
+                simulator.regs.setExmemCur(-1);
+                simulator.pc.nextPC = regAData;
+                prevStage.nextWriteBack = false;
+                simulator.getIfIdStage().nextWriteBack = false;
                 break;
             default:
                 break;
