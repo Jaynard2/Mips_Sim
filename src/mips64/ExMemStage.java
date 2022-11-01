@@ -34,6 +34,9 @@ public class ExMemStage {
             regB = prevStage.regB;
             aluIntData = 0;
 
+            if(!shouldWriteback)
+                return;
+
             int regA = prevStage.regAData;
             int regB = prevStage.regBData;
             if(isForwarded == FORWADED.REG_A || isForwarded == FORWADED.ALL)
@@ -106,25 +109,64 @@ public class ExMemStage {
                 break;
             }
             case Instruction.INST_BEQ:
-                if(regA != regB)
-                    break;
-            case Instruction.INST_BNE:
+                destReg = -1;
                 if(regA == regB)
+                {
+                    simulator.pc.pc += imm;
+                    prevStage.shouldWriteback = false;
                     break;
+                }
+                shouldWriteback = false;
+                break;
+            case Instruction.INST_BNE:
+                destReg = -1;
+                if(regA != regB)
+                {
+                    simulator.pc.pc += imm;
+                    prevStage.shouldWriteback = false;
+                    break;
+                }
+                shouldWriteback = false;
+                break;
             case Instruction.INST_BLTZ:
-                if(regA >= regB)
-                    break;
-            case Instruction.INST_BLEZ:
-                if(regA > regB)
-                    break;
-            case Instruction.INST_BGTZ:
-                if(regA <= regB)
-                    break;
-            case Instruction.INST_BGEZ:
+                destReg = -1;
                 if(regA < regB)
+                {
+                    simulator.pc.pc += imm;
+                    prevStage.shouldWriteback = false;
                     break;
-                simulator.pc.pc += imm;
-                prevStage.shouldWriteback = false;
+                }
+                shouldWriteback = false;
+                break;
+            case Instruction.INST_BLEZ:
+                destReg = -1;
+                if(regA <= regB)
+                {
+                    simulator.pc.pc += imm;
+                    prevStage.shouldWriteback = false;
+                    break;
+                }
+                shouldWriteback = false;
+                break;
+            case Instruction.INST_BGTZ:
+                destReg = -1;
+                if(regA > regB)
+                {
+                    simulator.pc.pc += imm;
+                    prevStage.shouldWriteback = false;
+                    break;
+                }
+                shouldWriteback = false;
+                break;
+            case Instruction.INST_BGEZ:
+                destReg = -1;
+                if(regA >= regB)
+                {
+                    simulator.pc.pc += imm;
+                    prevStage.shouldWriteback = false;
+                    break;
+                }
+                shouldWriteback = false;
                 break;
             case Instruction.INST_JR:
             case Instruction.INST_JALR:

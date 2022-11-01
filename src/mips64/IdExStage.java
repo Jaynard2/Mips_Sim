@@ -40,6 +40,7 @@ public class IdExStage {
             instPC = simulator.getIfIdStage().instPC;
             opcode = simulator.getIfIdStage().opcode;
             inst = simulator.getIfIdStage().inst;
+            shouldWriteback = true;
             destReg = -1;
             regA = -1;
             regB = -1;
@@ -52,17 +53,18 @@ public class IdExStage {
             if (inst instanceof ITypeInst){
                 regA = ((ITypeInst)inst).getRS();
                 regAData = regs.readReg(regA);
-                destReg = ((ITypeInst)inst).getRT();
+                regB = destReg = ((ITypeInst)inst).getRT();
+                regBData = regs.readReg(destReg);
                 immediate = ((ITypeInst)inst).getImmed();
 
                 if(opcode == jrCode || opcode == jalrCode)
                 {
                     if(opcode == jalrCode)
                     {
-                        immediate = simulator.pc.pc;
-                        destReg = 31;
+                        simulator.regs.writeReg(31, simulator.pc.pc);
                     }
                     simulator.pc.pc = regAData;
+                    destReg = -1;
                 }
             }
             else if (inst instanceof RTypeInst){
@@ -72,17 +74,16 @@ public class IdExStage {
                 regBData = regs.readReg(regB);
                 destReg = ((RTypeInst)inst).getRD();
                 shftAmount = ((RTypeInst)inst).getShamt();
-                //immediate = 0;
             }
             else if (inst instanceof JTypeInst){
                 if(opcode == jumpCode || opcode == jalCode)
                 {
                     if(opcode == jalCode)
                     {
-                        immediate = simulator.pc.pc + 4;
-                        destReg = 31;
+                        simulator.regs.writeReg(31, simulator.pc.pc);
                     }
                     simulator.pc.pc += ((JTypeInst)inst).getOffset();
+                    destReg = -1;
                 }
             }
         }

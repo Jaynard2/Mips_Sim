@@ -17,7 +17,6 @@ public class MemWbStage {
     final int haltCode = Instruction.getOpcodeFromName("HALT");
     final int loadCode = Instruction.getOpcodeFromName("LW");
     final int storeCode = Instruction.getOpcodeFromName("SW");
-    final int jalCode = Instruction.getOpcodeFromName("JAL");
 
     public MemWbStage(PipelineSimulator sim) {
         simulator = sim;
@@ -36,49 +35,43 @@ public class MemWbStage {
             return;
         }
 
-        // if(!shouldWriteback)
-        // {
-        //     return;
-        // }
-
         Registers regs = simulator.regs;
         regs.setConcerned(FORWARD_STAGES.NONE);
         ExMemStage prevStage = simulator.getExMemStage();
         int regA = simulator.idEx.regA;
         int regB = simulator.idEx.regB;
 
-        if (opcode == loadCode)
+        if(shouldWriteback)
         {
-            if(simulator.stall)
+            if (opcode == loadCode)
             {
-                simulator.regs.writeReg(destReg, loadIntData);
-                if(regA == destReg)
+                if(simulator.stall)
                 {
-                    prevStage.isForwarded = FORWADED.REG_A;
-                    prevStage.storeIntData = loadIntData;
+                    simulator.regs.writeReg(destReg, loadIntData);
+                    if(regA == destReg)
+                    {
+                        prevStage.isForwarded = FORWADED.REG_A;
+                        prevStage.storeIntData = loadIntData;
+                    }
+                    if(regB == destReg)
+                    {
+                        prevStage.isForwarded = prevStage.isForwarded == FORWADED.NONE ? FORWADED.REG_B : FORWADED.ALL;
+                        prevStage.storeIntData = loadIntData;
+                    }
                 }
-                if(regB == destReg)
+            }
+            else
+            {
+                if(opcode == storeCode)
                 {
-                    prevStage.isForwarded = prevStage.isForwarded == FORWADED.NONE ? FORWADED.REG_B : FORWADED.ALL;
-                    prevStage.storeIntData = loadIntData;
+                    MemoryModel mem = simulator.getMemory();
+                    mem.setIntDataAtAddr(aluIntData, regs.readReg(destReg));
+                    regs.setMemwbCur(-1);
                 }
-            }
-        }
-        else
-        {
-            if(opcode == storeCode)
-            {
-                MemoryModel mem = simulator.getMemory();
-                mem.setIntDataAtAddr(aluIntData, regs.readReg(destReg));
-                regs.setMemwbCur(-1);
-            }
-            else if(opcode == jalCode)
-            {
-                regs.writeReg(destReg, aluIntData);
-            }
-            else if(destReg != -1)
-            {
-                regs.writeReg(destReg, aluIntData);
+                else if(destReg != -1)
+                {
+                    regs.writeReg(destReg, aluIntData);
+                }
             }
         }
         loadIntData = -1;
